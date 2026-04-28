@@ -9,10 +9,10 @@ I will choose Scenario B for this assessment.
   - Price/status changes need to updated quickly
   - Solution: Polling interval + WebSocket
 - Type of statuses/actions: Can add or remove types
-
+- Manager has already authenticated and authorised to access the APIs. Id of the manager will be there name 
 
 **Diagrams**
-- place holder
+- Database Schema: https://drive.google.com/file/d/1LW2kAVR0uuHBpARYapmPWq8EUByTrfdN/view?usp=sharing
 
 **Key components**:
 - **Inventory Service**: Fetches and returns vehicle data
@@ -34,3 +34,7 @@ I will choose Scenario B for this assessment.
   - Request count
   - Error rate
   - Response time
+
+
+**Considering**
+- Hibernate enver for history records
