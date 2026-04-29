@@ -297,6 +297,28 @@ class VehicleServiceTest {
         assertThat(response.getTotalElements()).isZero();
     }
 
+    @Test
+    @DisplayName("getVehicles should return only aging vehicles when filtering by isAging=true")
+    void getVehicles_should_returnAgingVehicles_when_filteringByIsAgingTrue() {
+        // Arrange
+        VehicleFilterRequest filterRequest = new VehicleFilterRequest();
+        filterRequest.setIsAging(true);
+
+        List<Vehicle> agingVehicles = allVehicles.stream()
+                .filter(v -> v.getInventoryReceiptDate().isBefore(LocalDate.now().minusDays(90)))
+                .toList();
+
+        Page<Vehicle> vehiclePage = new PageImpl<>(agingVehicles, PageRequest.of(0, 10), agingVehicles.size());
+        when(vehicleRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(vehiclePage);
+
+        // Act
+        PaginatedVehicleResponse response = vehicleService.getVehicles(filterRequest);
+
+        // Assert
+        assertThat(response.getVehicles()).hasSize(agingVehicles.size());
+        response.getVehicles().forEach(v -> assertThat(v.getIsAging()).isTrue());
+    }
+
     private List<Vehicle> prepareMockData() {
         Make toyota = new Make("Toyota");
         Make honda = new Make("Honda");
@@ -338,7 +360,12 @@ class VehicleServiceTest {
         Vehicle v15 = createVehicle(mustang, 2023, "VIN015", "AVAILABLE", new BigDecimal("40000"), 1000, LocalDate.now().minusDays(3));
         Vehicle v16 = createVehicle(corolla, 2022, "VIN016", "SOLD", new BigDecimal("21000"), 12000, LocalDate.now().minusDays(15));
 
-        return List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16);
+        // Aging Stock
+        Vehicle v17 = createVehicle(camry, 2023, "VIN017", "AVAILABLE", new BigDecimal("33000"), 500, LocalDate.now().minusDays(91));
+        Vehicle v18 = createVehicle(civic, 2022, "VIN018", "AVAILABLE", new BigDecimal("27000"), 8000, LocalDate.now().minusDays(120));
+        Vehicle v19 = createVehicle(f150, 2021, "VIN019", "AVAILABLE", new BigDecimal("42000"), 15000, LocalDate.now().minusDays(200));
+
+        return List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19);
     }
 
     private Model createModel(String name, Make make) {

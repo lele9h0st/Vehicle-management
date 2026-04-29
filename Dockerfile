@@ -1,5 +1,5 @@
-# Use an official JDK 25 image as a parent image
-FROM eclipse-temurin:25-jdk-alpine
+# Use an official JDK 23 image as a parent image
+FROM eclipse-temurin:23-jdk-alpine
 
 # Set the working directory in the container
 WORKDIR /app

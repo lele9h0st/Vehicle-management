@@ -50,6 +50,11 @@ public class VehicleServiceImpl implements VehicleService {
         response.setCreatedAt(vehicle.getCreatedAt());
         response.setUpdatedBy(vehicle.getUpdatedBy());
         response.setUpdatedAt(vehicle.getUpdatedAt());
+        
+        boolean isAging = vehicle.getInventoryReceiptDate() != null && 
+                vehicle.getInventoryReceiptDate().isBefore(java.time.LocalDate.now().minusDays(90));
+        response.setIsAging(isAging);
+        
         return response;
     }
 }

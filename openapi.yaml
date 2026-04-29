@@ -93,6 +93,21 @@ paths:
             enum: [ASC, DESC]
             default: DESC
           description: Sort direction
+        - name: isAging
+          in: query
+          schema:
+            type: boolean
+          description: Filter by aging stock (> 90 days)
+        - name: minDaysInInventory
+          in: query
+          schema:
+            type: integer
+          description: Minimum days in inventory
+        - name: maxDaysInInventory
+          in: query
+          schema:
+            type: integer
+          description: Maximum days in inventory
       responses:
         '200':
           description: Successful response
@@ -160,3 +175,6 @@ components:
         updatedAt:
           type: string
           format: date-time
+        isAging:
+          type: boolean
+          description: Indicates if the vehicle is aging stock (> 90 days)

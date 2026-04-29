@@ -64,6 +64,21 @@ public class VehicleSpecification {
                 predicates = cb.and(predicates, cb.greaterThanOrEqualTo(root.get("updatedAt"), filter.getUpdatedAt()));
             }
 
+            if (Boolean.TRUE.equals(filter.getIsAging())) {
+                java.time.LocalDate agingDate = java.time.LocalDate.now().minusDays(90);
+                predicates = cb.and(predicates, cb.lessThan(root.get("inventoryReceiptDate"), agingDate));
+            }
+
+            if (filter.getMinDaysInInventory() != null) {
+                java.time.LocalDate minDate = java.time.LocalDate.now().minusDays(filter.getMinDaysInInventory());
+                predicates = cb.and(predicates, cb.lessThanOrEqualTo(root.get("inventoryReceiptDate"), minDate));
+            }
+
+            if (filter.getMaxDaysInInventory() != null) {
+                java.time.LocalDate maxDate = java.time.LocalDate.now().minusDays(filter.getMaxDaysInInventory());
+                predicates = cb.and(predicates, cb.greaterThanOrEqualTo(root.get("inventoryReceiptDate"), maxDate));
+            }
+
             return predicates;
         };
     }

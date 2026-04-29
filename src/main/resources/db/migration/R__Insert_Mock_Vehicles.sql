@@ -121,3 +121,19 @@ INSERT INTO vehicle (model_id, year, vin, status, price, mileage, inventory_rece
 SELECT m.id, 2022, 'VIN016', 'SOLD', 21000, 12000, CURRENT_DATE - INTERVAL '15 days'
 FROM model m JOIN make mk ON m.make_id = mk.id WHERE mk.name = 'Toyota' AND m.name = 'Corolla'
 ON CONFLICT (vin) DO NOTHING;
+
+-- 4. Aging Stock (Vehicles > 90 days in inventory)
+INSERT INTO vehicle (model_id, year, vin, status, price, mileage, inventory_receipt_date)
+SELECT m.id, 2023, 'VIN017', 'AVAILABLE', 33000, 500, CURRENT_DATE - INTERVAL '91 days'
+FROM model m JOIN make mk ON m.make_id = mk.id WHERE mk.name = 'Toyota' AND m.name = 'Camry'
+ON CONFLICT (vin) DO NOTHING;
+
+INSERT INTO vehicle (model_id, year, vin, status, price, mileage, inventory_receipt_date)
+SELECT m.id, 2022, 'VIN018', 'AVAILABLE', 27000, 8000, CURRENT_DATE - INTERVAL '120 days'
+FROM model m JOIN make mk ON m.make_id = mk.id WHERE mk.name = 'Honda' AND m.name = 'Civic'
+ON CONFLICT (vin) DO NOTHING;
+
+INSERT INTO vehicle (model_id, year, vin, status, price, mileage, inventory_receipt_date)
+SELECT m.id, 2021, 'VIN019', 'AVAILABLE', 42000, 15000, CURRENT_DATE - INTERVAL '200 days'
+FROM model m JOIN make mk ON m.make_id = mk.id WHERE mk.name = 'Ford' AND m.name = 'F-150'
+ON CONFLICT (vin) DO NOTHING;

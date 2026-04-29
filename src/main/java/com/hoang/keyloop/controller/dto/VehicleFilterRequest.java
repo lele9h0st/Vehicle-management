@@ -66,4 +66,15 @@ public class VehicleFilterRequest {
     @Schema(description = "Sort direction", defaultValue = "DESC")
     private String sortDirection = "DESC";
 
+    @Schema(description = "Filter by aging stock (> 90 days)", example = "true")
+    private Boolean isAging;
+
+    @Schema(description = "Minimum days in inventory", example = "30")
+    @Min(0)
+    private Integer minDaysInInventory;
+
+    @Schema(description = "Maximum days in inventory", example = "120")
+    @Min(0)
+    private Integer maxDaysInInventory;
+
 }

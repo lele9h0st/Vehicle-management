@@ -25,4 +25,5 @@ public class VehicleResponse {
     private LocalDateTime createdAt;
     private String updatedBy;
     private LocalDateTime updatedAt;
+    private Boolean isAging;
 }
