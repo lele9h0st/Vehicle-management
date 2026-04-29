@@ -16,12 +16,12 @@ public class VehicleSpecification {
             if (StringUtils.hasText(filter.getMake())) {
                 Join<Vehicle, Model> modelJoin = root.join("model");
                 Join<Model, Make> makeJoin = modelJoin.join("make");
-                predicates = cb.and(predicates, cb.equal(makeJoin.get("name"), filter.getMake()));
+                predicates = cb.and(predicates, cb.equal(cb.lower(makeJoin.get("name")), filter.getMake().toLowerCase()));
             }
 
             if (StringUtils.hasText(filter.getModel())) {
                 Join<Vehicle, Model> modelJoin = root.join("model");
-                predicates = cb.and(predicates, cb.equal(modelJoin.get("name"), filter.getModel()));
+                predicates = cb.and(predicates, cb.equal(cb.lower(modelJoin.get("name")), filter.getModel().toLowerCase()));
             }
 
             if (filter.getYear() != null) {
@@ -29,7 +29,7 @@ public class VehicleSpecification {
             }
 
             if (StringUtils.hasText(filter.getStatus())) {
-                predicates = cb.and(predicates, cb.equal(root.get("status"), filter.getStatus()));
+                predicates = cb.and(predicates, cb.equal(cb.lower(root.get("status")), filter.getStatus().toLowerCase()));
             }
 
             if (filter.getMinPrice() != null) {
@@ -57,7 +57,7 @@ public class VehicleSpecification {
             }
 
             if (StringUtils.hasText(filter.getUpdatedBy())) {
-                predicates = cb.and(predicates, cb.equal(root.get("updatedBy"), filter.getUpdatedBy()));
+                predicates = cb.and(predicates, cb.equal(cb.lower(root.get("updatedBy")), filter.getUpdatedBy().toLowerCase()));
             }
 
             if (filter.getUpdatedAt() != null) {

@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: Vehicle Inventory API
+  description: API for managing and querying vehicle inventory.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /api/v1/inventory/stock:
+    get:
+      summary: Get filterable list of all vehicles
+      description: Returns a paginated list of vehicles based on provided filters.
+      parameters:
+        - name: make
+          in: query
+          schema:
+            type: string
+          description: Filter by vehicle make (e.g., Toyota)
+        - name: model
+          in: query
+          schema:
+            type: string
+          description: Filter by vehicle model (e.g., Camry)
+        - name: year
+          in: query
+          schema:
+            type: integer
+          description: Filter by exact manufacturing year
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: Filter by vehicle status (e.g., AVAILABLE, SOLD)
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+            format: decimal
+          description: Minimum price filter
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+            format: decimal
+          description: Maximum price filter
+        - name: minMileage
+          in: query
+          schema:
+            type: integer
+          description: Minimum mileage filter
+        - name: maxMileage
+          in: query
+          schema:
+            type: integer
+          description: Maximum mileage filter
+        - name: inventoryReceiptDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter by exact inventory receipt date (YYYY-MM-DD)
+        - name: updatedBy
+          in: query
+          schema:
+            type: string
+          description: Filter by the user who last updated the record
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Page number (zero-based)
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+          description: Number of records per page
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            default: createdAt
+          description: Field to sort by
+        - name: sortDirection
+          in: query
+          schema:
+            type: string
+            enum: [ASC, DESC]
+            default: DESC
+          description: Sort direction
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVehicleResponse'
+        '400':
+          description: Invalid input parameters
+        '429':
+          description: Too many requests (Rate limit exceeded: 20 req / 10s)
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Too many requests"
+
+components:
+  schemas:
+    PaginatedVehicleResponse:
+      type: object
+      properties:
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        currentPage:
+          type: integer
+        size:
+          type: integer
+    VehicleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        make:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+        vin:
+          type: string
+        status:
+          type: string
+        price:
+          type: number
+          format: decimal
+        mileage:
+          type: integer
+        inventoryReceiptDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
