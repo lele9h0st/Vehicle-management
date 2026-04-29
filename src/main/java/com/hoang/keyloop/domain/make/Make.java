@@ -5,8 +5,17 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+
 @Entity
 @Table(name = "make")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Make {
 
     @Id
@@ -19,33 +28,7 @@ public class Make {
     @OneToMany(mappedBy = "make", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Model> models;
 
-    public Make() {}
-
     public Make(String name) {
         this.name = name;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Model> getModels() {
-        return models;
-    }
-
-    public void setModels(List<Model> models) {
-        this.models = models;
     }
 }
