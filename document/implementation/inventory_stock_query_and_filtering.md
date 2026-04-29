@@ -7,10 +7,10 @@
 - Response payload should provide list of vehicle, pagination information
 - Sanitize and handle gracefully any invalid input. Return appropriate error response. If validation error happen, log it and return error response
 - Endpoint url /api/v1/inventory/stock 
+- ratelimiter should be applied for any request, only 20 requests per 10 seconds
 
 ## Non functional requirements
 - response time shoud be less than 100ms for 95% of requests
-- ratelimiter should be applied for any request, only 20 requests per 10 seconds
 
 # Rules:
 - write unit tests before implementation, let me review the tests first then continue to implementation

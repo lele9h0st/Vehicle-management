@@ -11,10 +11,12 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@Slf4j
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
@@ -24,20 +26,26 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Use IP address or session as key. For now, using a global key since requirement doesn't specify per user.
-        // But usually rate limiting is per IP or per user.
-        String key = "global"; // Requirement: "only 20 requests per 10 seconds" for ANY request?
-        // Let's assume it's per IP to be more realistic, or just global if strictly following.
-        // "ratelimiter should be applied for any request"
+        String key = getClientIp(request);
         
         Bucket bucket = buckets.computeIfAbsent(key, k -> createNewBucket());
 
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(request, response);
         } else {
+            log.warn("Rate limit exceeded for IP: {}", key);
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.getWriter().write("Too many requests");
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Too many requests\", \"message\": \"Rate limit exceeded. Please try again later.\"}");
         }
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     private Bucket createNewBucket() {

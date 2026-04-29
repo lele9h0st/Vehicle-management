@@ -13,7 +13,8 @@ I will choose Scenario B for this assessment.
 
 **Diagrams**
 - Database Schema: https://drive.google.com/file/d/1LW2kAVR0uuHBpARYapmPWq8EUByTrfdN/view?usp=sharing
-
+- Sequence Diagram:
+  - Inventory Visualization: https://drive.google.com/file/d/1K8I1g89qSSvFl1oOBm_wR6bi-sqXg5gL/view?usp=sharing
 **Key components**:
 - **Inventory Service**: Fetches and returns vehicle data
 - **Filter Service**: Applies dynamic filtering (make, model, age range, etc.)

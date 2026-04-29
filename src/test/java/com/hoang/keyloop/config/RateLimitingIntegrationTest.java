@@ -30,17 +30,56 @@ class RateLimitingIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should return 429 Too Many Requests when exceeding rate limit")
-    void should_return429_when_rateLimitExceeded() throws Exception {
-        // We have a limit of 20 requests per 10 seconds.
-        // Let's send 21 requests.
+    @DisplayName("Should return 429 Too Many Requests when exceeding rate limit for a single IP")
+    void should_return429_when_rateLimitExceededPerIp() throws Exception {
+        String clientIp = "192.168.1.1";
         
         for (int i = 0; i < 20; i++) {
-            mockMvc.perform(get("/api/v1/inventory/stock"))
+            mockMvc.perform(get("/api/v1/inventory/stock")
+                            .with(request -> {
+                                request.setRemoteAddr(clientIp);
+                                return request;
+                            }))
                     .andExpect(status().isOk());
         }
 
-        mockMvc.perform(get("/api/v1/inventory/stock"))
+        mockMvc.perform(get("/api/v1/inventory/stock")
+                        .with(request -> {
+                            request.setRemoteAddr(clientIp);
+                            return request;
+                        }))
                 .andExpect(status().isTooManyRequests());
+    }
+
+    @Test
+    @DisplayName("Should allow requests from different IPs even if one is rate limited")
+    void should_allowDifferentIps_when_oneIsLimited() throws Exception {
+        String limitedIp = "192.168.1.1";
+        String allowedIp = "192.168.1.2";
+
+        // Exceed limit for limitedIp
+        for (int i = 0; i < 20; i++) {
+            mockMvc.perform(get("/api/v1/inventory/stock")
+                            .with(request -> {
+                                request.setRemoteAddr(limitedIp);
+                                return request;
+                            }))
+                    .andExpect(status().isOk());
+        }
+
+        mockMvc.perform(get("/api/v1/inventory/stock")
+                        .with(request -> {
+                            request.setRemoteAddr(limitedIp);
+                            return request;
+                        }))
+                .andExpect(status().isTooManyRequests());
+
+        // allowedIp should still be able to make requests
+        mockMvc.perform(get("/api/v1/inventory/stock")
+                        .with(request -> {
+                            request.setRemoteAddr(allowedIp);
+                            return request;
+                        }))
+                .andExpect(status().isOk());
     }
 }
