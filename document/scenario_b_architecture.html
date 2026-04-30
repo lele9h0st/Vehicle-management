@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenario B - Intelligent Inventory Dashboard - Architecture Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a1a2e;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+        h2 {
+            text-align: center;
+            color: #555;
+            font-size: 1.1em;
+            font-weight: normal;
+            margin-top: 0;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1400px;
+            overflow-x: auto;
+        }
+        .diagram-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 0.85em;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Scenario B: Intelligent Inventory Dashboard</h1>
+<h2>Architecture Diagram — Supply Domain</h2>
+
+<!-- System Context Diagram -->
+<div class="diagram-container">
+    <div class="diagram-title">System Context Diagram</div>
+    <div class="mermaid">
+graph TB
+    subgraph External["External Actors"]
+        DM["👤 Dealership Manager<br/>Views inventory, identifies<br/>aging stock, logs actions"]
+        DS["🏢 DMS / Data Source<br/>Vehicle inventory data<br/>(external feed)"]
+    end
+
+    subgraph System["Intelligent Inventory Dashboard"]
+        ID["📊 Inventory Dashboard System<br/>Web application providing<br/>real-time inventory overview"]
+    end
+
+    DM -->|"Views & manages<br/>inventory"| ID
+    DS -->|"Vehicle data<br/>ingestion"| ID
+
+    style External fill:#f0f4ff,stroke:#c5cae9,stroke-width:2px
+    style System fill:#e8f5e9,stroke:#a5d6a7,stroke-width:2px
+    style DM fill:#fff3e0,stroke:#ffcc80,stroke-width:2px
+    style DS fill:#fce4ec,stroke:#ef9a9a,stroke-width:2px
+    style ID fill:#c8e6c9,stroke:#66bb6a,stroke-width:2px,color:#000
+    </div>
+</div>
+
+<!-- Container Diagram -->
+<div class="diagram-container">
+    <div class="diagram-title">Container Diagram</div>
+    <div class="mermaid">
+graph TB
+    subgraph Frontend["Frontend — React SPA"]
+        UI["🖥️ React Web App<br/>Inventory Dashboard UI"]
+        Filters["🔍 Filter Engine<br/>Make / Model / Age<br/>client-side filtering"]
+        AgingUI["⚠️ Aging Stock Panel<br/>Prominent highlight<br/>of vehicles > 90 days"]
+        ActionForm["📝 Action Logger<br/>Log status & proposed<br/>action per vehicle"]
+        State["📦 State Management<br/>React Context / Zustand"]
+    end
+
+    subgraph Backend["Backend — Node.js / Express API"]
+        API["🌐 REST API Gateway<br/>Express.js<br/>Routing & Middleware"]
+        VehicleSvc["🚗 Vehicle Service<br/>CRUD + filtering<br/>business logic"]
+        AgingSvc["⏱️ Aging Service<br/>Calculates days-in-stock<br/>Identifies aging vehicles"]
+        ActionSvc["📋 Action Service<br/>Persist manager actions<br/>& status updates"]
+        AuthMW["🔐 Auth Middleware<br/>JWT verification<br/>Role-based access"]
+    end
+
+    subgraph Data["Data Layer"]
+        DB[("🗄️ PostgreSQL<br/>Vehicles, Actions,<br/>Dealerships")]
+        Cache[("⚡ Redis Cache<br/>Aging calculations<br/>Filter results")]
+    end
+
+    subgraph Observability["Observability"]
+        Logs["📜 Structured Logs<br/>Winston / Pino"]
+        Metrics["📈 Metrics<br/>Prometheus format"]
+        Health["💚 Health Checks<br/>/health endpoint"]
+    end
+
+    DM2["👤 Dealership Manager"] --> UI
+    UI --> Filters
+    UI --> AgingUI
+    UI --> ActionForm
+    Filters --> State
+    AgingUI --> State
+    ActionForm --> State
+
+    State -->|"HTTP/REST"| API
+    API --> AuthMW
+    AuthMW --> VehicleSvc
+    AuthMW --> AgingSvc
+    AuthMW --> ActionSvc
+
+    VehicleSvc --> DB
+    VehicleSvc --> Cache
+    AgingSvc --> DB
+    AgingSvc --> Cache
+    ActionSvc --> DB
+
+    VehicleSvc --> Logs
+    AgingSvc --> Logs
+    ActionSvc --> Logs
+    API --> Metrics
+    API --> Health
+
+    style Frontend fill:#e3f2fd,stroke:#90caf9,stroke-width:2px
+    style Backend fill:#fff3e0,stroke:#ffcc80,stroke-width:2px
+    style Data fill:#f3e5f5,stroke:#ce93d8,stroke-width:2px
+    style Observability fill:#e0f2f1,stroke:#80cbc4,stroke-width:2px
+    style UI fill:#bbdefb,stroke:#42a5f5,stroke-width:1px,color:#000
+    style Filters fill:#bbdefb,stroke:#42a5f5,stroke-width:1px,color:#000
+    style AgingUI fill:#ffcdd2,stroke:#ef5350,stroke-width:1px,color:#000
+    style ActionForm fill:#c8e6c9,stroke:#66bb6a,stroke-width:1px,color:#000
+    style State fill:#bbdefb,stroke:#42a5f5,stroke-width:1px,color:#000
+    style API fill:#ffe0b2,stroke:#ffa726,stroke-width:1px,color:#000
+    style VehicleSvc fill:#ffe0b2,stroke:#ffa726,stroke-width:1px,color:#000
+    style AgingSvc fill:#ffcdd2,stroke:#ef5350,stroke-width:1px,color:#000
+    style ActionSvc fill:#c8e6c9,stroke:#66bb6a,stroke-width:1px,color:#000
+    style AuthMW fill:#e1bee7,stroke:#ab47bc,stroke-width:1px,color:#000
+    style DB fill:#e1bee7,stroke:#ab47bc,stroke-width:1px,color:#000
+    style Cache fill:#e1bee7,stroke:#ab47bc,stroke-width:1px,color:#000
+    style Logs fill:#b2dfdb,stroke:#26a69a,stroke-width:1px,color:#000
+    style Metrics fill:#b2dfdb,stroke:#26a69a,stroke-width:1px,color:#000
+    style Health fill:#b2dfdb,stroke:#26a69a,stroke-width:1px,color:#000
+    style DM2 fill:#fff3e0,stroke:#ffcc80,stroke-width:2px
+    </div>
+</div>
+
+<!-- Data Flow / Sequence Diagram -->
+<div class="diagram-container">
+    <div class="diagram-title">Core Data Flow — Inventory Visualization & Aging Stock Identification</div>
+    <div class="mermaid">
+sequenceDiagram
+    actor Manager as Dealership Manager
+    participant UI as React Dashboard
+    participant API as REST API
+    participant Aging as Aging Service
+    participant Vehicle as Vehicle Service
+    participant Cache as Redis Cache
+    participant DB as PostgreSQL
+
+    Manager->>UI: Opens Inventory Dashboard
+    UI->>API: GET /api/v1/vehicles?dealershipId=X
+    API->>Vehicle: fetchVehicles(filters)
+    Vehicle->>Cache: Check cached results
+    alt Cache Hit
+        Cache-->>Vehicle: Return cached data
+    else Cache Miss
+        Vehicle->>DB: SELECT vehicles WHERE dealership_id = X
+        DB-->>Vehicle: Vehicle records
+        Vehicle->>Cache: Store results (TTL: 5min)
+    end
+    Vehicle-->>API: Vehicle list
+    API-->>UI: 200 OK + Vehicle JSON
+
+    UI->>API: GET /api/v1/vehicles/aging?dealershipId=X
+    API->>Aging: identifyAgingStock(dealershipId)
+    Aging->>DB: SELECT * WHERE date_added < NOW() - 90 days
+    DB-->>Aging: Aging vehicle records
+    Aging-->>API: Aging stock list (with days_in_stock)
+    API-->>UI: 200 OK + Aging Vehicle JSON
+    UI-->>Manager: Display inventory + prominently highlight aging stock
+    </div>
+</div>
+
+<!-- Action Persistence Flow -->
+<div class="diagram-container">
+    <div class="diagram-title">Core Data Flow — Actionable Insights (Log Action for Aging Vehicle)</div>
+    <div class="mermaid">
+sequenceDiagram
+    actor Manager as Dealership Manager
+    participant UI as React Dashboard
+    participant API as REST API
+    participant Action as Action Service
+    participant DB as PostgreSQL
+
+    Manager->>UI: Clicks aging vehicle → "Log Action"
+    UI->>UI: Opens Action Form
+    Manager->>UI: Selects status / enters proposed action
+    UI->>API: POST /api/v1/vehicles/{id}/actions<br/>{status: "Price Reduction Planned", notes: "..."}
+
+    API->>Action: createAction(vehicleId, payload)
+    Action->>Action: Validate vehicle is aging (>90 days)
+    Action->>DB: INSERT INTO vehicle_actions<br/>(vehicle_id, status, notes, created_by, created_at)
+    DB-->>Action: Action record persisted
+    Action-->>API: 201 Created + Action record
+    API-->>UI: 201 Created
+
+    UI->>UI: Update vehicle card with new action status
+    UI-->>Manager: Confirmation — action logged successfully
+    </div>
+</div>
+
+<!-- Database Schema -->
+<div class="diagram-container">
+    <div class="diagram-title">Database Schema</div>
+    <div class="mermaid">
+erDiagram
+    DEALERSHIP {
+        uuid id PK
+        string name
+        string location
+        timestamp created_at
+    }
+
+    VEHICLE {
+        uuid id PK
+        uuid dealership_id FK
+        string vin UK
+        string make
+        string model
+        integer year
+        string color
+        string trim
+        decimal price
+        string status
+        timestamp date_added
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    VEHICLE_ACTION {
+        uuid id PK
+        uuid vehicle_id FK
+        string status
+        string notes
+        string created_by
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    DEALERSHIP ||--o{ VEHICLE : "has"
+    VEHICLE ||--o{ VEHICLE_ACTION : "has"
+    </div>
+</div>
+
+<div class="footer">
+    Scenario B: Intelligent Inventory Dashboard — Architecture Diagram | Keyloop Technical Assessment
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+            primaryColor: '#e3f2fd',
+            primaryTextColor: '#1a1a2e',
+            primaryBorderColor: '#90caf9',
+            lineColor: '#546e7a',
+            secondaryColor: '#fff3e0',
+            tertiaryColor: '#f3e5f5',
+            fontSize: '14px'
+        },
+        sequence: {
+            actorMargin: 80,
+            messageMargin: 40,
+            mirrorActors: false
+        }
+    });
+</script>
+
+</body>
+</html>
