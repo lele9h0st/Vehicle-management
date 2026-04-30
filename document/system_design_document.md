@@ -31,7 +31,7 @@ I will choose Scenario B for this assessment.
 - **DevOps**: Docker Compose orchestrates the backend, database, and cache for a unified local environment.
 
 **Technologies**
-- real-time data refresh: interval polling + WebSocket. 
+- real-time data refresh: interval polling. 
   - Interval polling: API endpoint to fetch all vehicles data with filters. API consumer can choose interval time to fetch data (5s, 15s, 1m, 5m, etc).
 - Database: PostgreSQL
 - Backend framework: Springboot
