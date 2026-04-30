@@ -6,10 +6,10 @@ import com.hoang.keyloop.controller.dto.ActionUpdateRequest;
 import com.hoang.keyloop.domain.exception.NotAgingVehicleException;
 import com.hoang.keyloop.domain.vehicle.Vehicle;
 import com.hoang.keyloop.domain.vehicle.VehicleRepository;
+import com.hoang.keyloop.domain.vehicle.VehicleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -30,7 +30,9 @@ public class ActionServiceTest {
     @Mock
     private VehicleRepository vehicleRepository;
 
-    @InjectMocks
+    @Mock
+    private VehicleService vehicleService;
+
     private ActionServiceImpl actionService;
 
     private UUID vehicleId;
@@ -41,6 +43,7 @@ public class ActionServiceTest {
 
     @BeforeEach
     void setUp() {
+        actionService = new ActionServiceImpl(actionRepository, vehicleRepository, vehicleService);
         vehicleId = UUID.randomUUID();
         
         agingVehicle = new Vehicle();

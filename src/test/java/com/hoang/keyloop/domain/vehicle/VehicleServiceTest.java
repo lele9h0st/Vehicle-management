@@ -17,9 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,13 +31,16 @@ class VehicleServiceTest {
     @Mock
     private VehicleRepository vehicleRepository;
 
-    @InjectMocks
+    @Mock
+    private CacheManager cacheManager;
+
     private VehicleServiceImpl vehicleService;
 
     private List<Vehicle> allVehicles;
 
     @BeforeEach
     void setUp() {
+        vehicleService = new VehicleServiceImpl(vehicleRepository, cacheManager);
         allVehicles = prepareMockData();
     }
 
