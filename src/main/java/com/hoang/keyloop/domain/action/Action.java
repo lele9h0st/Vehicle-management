@@ -47,4 +47,11 @@ public class Action {
 
     @Column(name = "created_by", nullable = false, length = 100)
     private String createdBy;
+
+    @Column(name = "updated_by", length = 100)
+    private String updatedBy;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }
